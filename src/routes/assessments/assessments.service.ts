@@ -206,7 +206,7 @@ export class AssessmentsService {
             let normalizedScore = +this.normalizeTrailMakingTestScore(+tmtAssessment.time);
             level = Math.ceil(normalizedScore / 10);
 
-            console.log(normalizedScore)
+            if(user.trainingType == 'default') level = 4; // For default users, user a static level 4
 
             return {
                 statusCode: HttpStatus.OK,
@@ -309,7 +309,7 @@ export class AssessmentsService {
             return (100 - ((completionTime - averageTime) / (deficientTime - averageTime)) * 98).toFixed(2);
         } else if (completionTime < averageTime) {
             // If completion time is less than average time, normalize between 2 and 100
-            return (100 - ((completionTime) / (deficientTime - averageTime)) * 98).toFixed(2);
+            return (100 - ((completionTime) / (deficientTime - averageTime)) * 99).toFixed(2);
         }
     }
 }
