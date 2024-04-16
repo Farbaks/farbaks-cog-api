@@ -20,7 +20,7 @@ export class UsersService {
 
         // Check if User already exists
         let checkUser = await this.UserModel.findOne({
-            username: createUserDto.userName,
+            username: createUserDto.userName.toLowerCase(),
             isDeleted: false
         }).exec()
 
@@ -35,7 +35,7 @@ export class UsersService {
         let hashedPassword = await bcrypt.hash("" + createUserDto.password, 10);
 
         let user = new this.UserModel({
-            username: createUserDto.userName,
+            username: createUserDto.userName.toLowerCase(),
             age: createUserDto.age,
             gender: createUserDto.gender,
             password: hashedPassword,
@@ -53,7 +53,7 @@ export class UsersService {
     async login(loginDto: LoginDto) {
         // Check if User exists
         let checkUser = await this.UserModel.findOne({
-            username: loginDto.userName,
+            username: loginDto.userName.toLowerCase(),
             status: 'active',
             isDeleted: false
         }).select('password').exec()
@@ -78,7 +78,7 @@ export class UsersService {
         }
 
         let user = await this.UserModel.findOne({
-            username: loginDto.userName,
+            username: loginDto.userName.toLowerCase(),
             status: 'active',
             isDeleted: false
         }).exec()
