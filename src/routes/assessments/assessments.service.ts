@@ -24,8 +24,8 @@ export class AssessmentsService {
 
     async createAssessment(userInfo: any, addNewAssessmentDto: AddNewAssessmentScoreDto) {
 
-        // Check if there's an existing assessment in less than 10 days
-        let previousDate = moment().subtract('10', 'days').endOf('day').toDate();
+        // Check if there's an existing assessment in less than 7 days
+        let previousDate = moment().subtract('7', 'days').endOf('day').toDate();
 
         let checkAssessment = await this.AssessmentModel.findOne({
             user: new Types.ObjectId(userInfo._id),
@@ -119,7 +119,7 @@ export class AssessmentsService {
     async canPlayTraining(userInfo: any, query: GetDifficultyDto) {
         let previousDate;
         if(query.trainingType == "assessment") {
-            previousDate = moment().subtract('10', 'days').endOf('day').toDate(); // Assessments can only be taken every 10 days
+            previousDate = moment().subtract('7', 'days').endOf('day').toDate(); // Assessments can only be taken every 7 days
 
             let checkAssessment = await this.AssessmentModel.findOne({
                 user: new Types.ObjectId(userInfo._id),
@@ -223,9 +223,9 @@ export class AssessmentsService {
             trainingType: query.trainingType
         }).sort({ createdAt: -1 }).exec()
 
-        // If training sessions not up to 5, generate based on last training performance
-        if(countTrainings < 5) {
-            level = Math.ceil(+checkTraining.score * 1.05 / 10); // Multiply by 1.05 for a 5% target increase in performance
+        // If training sessions not up to 2, generate based on last training performance
+        if(countTrainings < 2) {
+            level = Math.ceil(+checkTraining.score * 1.02 / 10); // Multiply by 1.02 for a 2% target increase in performance
 
             return {
                 statusCode: HttpStatus.OK,
@@ -236,7 +236,7 @@ export class AssessmentsService {
             }
         }
 
-        // Else use decision model to predict (Aiming for a score of 10% increase from previous training)
+        // Else use decision model to predict (Aiming for a score of 2% increase from previous training)
         const d3Model = await this.D3Model.findOne().exec();
         let modelData = JSON.parse(d3Model.data.toString());
         let model = new DecisionTree(modelData);
@@ -245,7 +245,7 @@ export class AssessmentsService {
             "username": user.username,
             "age": user.age,
             "trainingType": query.trainingType,
-            "score": +checkTraining.score * 1.05,
+            "score": +checkTraining.score * 1.02,
         })
 
 
